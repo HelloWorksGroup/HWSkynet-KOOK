@@ -15,7 +15,6 @@ import (
 	"github.com/jpillora/overseer/fetcher"
 	"github.com/lonelyevil/khl"
 	"github.com/lonelyevil/khl/log_adapter/plog"
-	scribble "github.com/nanobox-io/golang-scribble"
 	"github.com/phuslu/log"
 	"github.com/spf13/viper"
 )
@@ -25,6 +24,10 @@ func buildUpdateLog() string {
 }
 
 var buildVersion string = "Skynet Alpha0000"
+
+// TODO:
+// 未找到合适方法在消息事件的上下文中获取服务器ID，暂时写这里了
+var guildId string = "6067588674873845"
 
 // 消毒室
 var registChannel string
@@ -52,8 +55,6 @@ var masterID string
 var botID string
 
 var localSession *khl.Session
-
-var db *scribble.Driver
 
 func isTodayWakeuped() bool {
 	return lastWakeupDay == strconv.Itoa(time.Now().Local().Day())
@@ -97,14 +98,13 @@ func sendMarkdownDirect(target string, content string) (mr *khl.MessageResp, err
 func prog(state overseer.State) {
 	fmt.Printf("App#[%s] start ...\n", state.ID)
 	rand.Seed(time.Now().UnixNano())
-	db, _ = scribble.New("./database", nil)
 
 	viper.SetDefault("token", "0")
 	viper.SetDefault("registChannel", "0")
 	viper.SetDefault("commonChannel", "0")
 	viper.SetDefault("gameChannel", "0")
 	viper.SetDefault("ingressChannel", "0")
-	viper.SetDefault("basicPrivilege", 4848723)
+	viper.SetDefault("basicPrivilege", "4848723")
 	viper.SetDefault("lastWakeupDay", "0")
 	viper.SetDefault("masterID", "")
 	viper.SetDefault("lastwordsID", "")
@@ -122,7 +122,7 @@ func prog(state overseer.State) {
 	gameChannel = viper.Get("gameChannel").(string)
 	ingressChannel = viper.Get("ingressChannel").(string)
 	lastWakeupDay = viper.Get("lastWakeupDay").(string)
-	basicPrivilege = viper.Get("basicPrivilege").(int64)
+	basicPrivilege, _ = strconv.ParseInt(viper.Get("basicPrivilege").(string), 10, 64)
 	if viper.Get("oldversion").(string) != buildVersion {
 		isVersionChange = true
 	}

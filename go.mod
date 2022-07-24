@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/adrg/strutil v0.3.0
 	github.com/jpillora/overseer v1.1.6
-	github.com/lithammer/fuzzysearch v1.1.5
 	github.com/lonelyevil/khl v0.0.27-0.20220429093902-17fb9d330fc2
 	github.com/lonelyevil/khl/log_adapter/plog v0.0.27-0.20220429093902-17fb9d330fc2
 	github.com/nanobox-io/golang-scribble v0.0.0-20190309225732-aa3e7c118975
