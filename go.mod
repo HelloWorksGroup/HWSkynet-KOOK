@@ -1,4 +1,4 @@
-module github.com/Nigh/YUI-KHL
+module github.com/HelloWorksGroup/HWSkynet-KOOK
 
 go 1.18
 

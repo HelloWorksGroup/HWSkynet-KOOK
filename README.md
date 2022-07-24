@@ -1,2 +1,3 @@
-# YUI-KHL
-开黑啦机器人
+# HWSkynet-KOOK
+
+HelloWorld群组KOOK机器人

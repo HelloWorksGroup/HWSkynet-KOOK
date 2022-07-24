@@ -21,14 +21,31 @@ import (
 )
 
 func buildUpdateLog() string {
-	return "添加了在错误的频道搜谱的回复。大家搜谱请前往搜谱专用频道 (chn)" + searchChannel + "(chn) 哦！不想被打扰可以直接静音搜谱频道哦！\n更多谱面管理功能还在开发中。对于YUI的功能欢迎大家提供更多建议哦。"
+	return "Skynet-KOOK初次上线。\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
 }
 
-var buildVersion string = "YUI-One Alpha0029"
+var buildVersion string = "Skynet Alpha0000"
+
+// 消毒室
+var registChannel string
+
+// 茶室频道
 var commonChannel string
-var searchChannel string
-var uploadChannel string
-var sheetChannel string
+
+// 电玩房频道
+var gameChannel string
+
+// 特工频道
+var ingressChannel string
+
+// 基础权限ID
+var basicPrivilege int64
+
+type handlerRule struct {
+	matcher string
+	getter  func(ctxCommon *khl.EventDataGeneral, matchs []string, reply func(string) string)
+}
+
 var isVersionChange bool = false
 var lastWakeupDay string // 上一次唤醒日期，用于限定每日一次的输出
 var masterID string
@@ -39,10 +56,7 @@ var localSession *khl.Session
 var db *scribble.Driver
 
 func isTodayWakeuped() bool {
-	if lastWakeupDay == strconv.Itoa(time.Now().Local().Day()) {
-		return true
-	}
-	return false
+	return lastWakeupDay == strconv.Itoa(time.Now().Local().Day())
 }
 
 func setWakeup() {
@@ -86,10 +100,11 @@ func prog(state overseer.State) {
 	db, _ = scribble.New("./database", nil)
 
 	viper.SetDefault("token", "0")
+	viper.SetDefault("registChannel", "0")
 	viper.SetDefault("commonChannel", "0")
-	viper.SetDefault("uploadChannel", "0")
-	viper.SetDefault("sheetChannel", "0")
-	viper.SetDefault("searchChannel", "0")
+	viper.SetDefault("gameChannel", "0")
+	viper.SetDefault("ingressChannel", "0")
+	viper.SetDefault("basicPrivilege", 4848723)
 	viper.SetDefault("lastWakeupDay", "0")
 	viper.SetDefault("masterID", "")
 	viper.SetDefault("lastwordsID", "")
@@ -102,11 +117,12 @@ func prog(state overseer.State) {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 	masterID = viper.Get("masterID").(string)
+	registChannel = viper.Get("registChannel").(string)
 	commonChannel = viper.Get("commonChannel").(string)
-	uploadChannel = viper.Get("uploadChannel").(string)
-	sheetChannel = viper.Get("sheetChannel").(string)
-	searchChannel = viper.Get("searchChannel").(string)
+	gameChannel = viper.Get("gameChannel").(string)
+	ingressChannel = viper.Get("ingressChannel").(string)
 	lastWakeupDay = viper.Get("lastWakeupDay").(string)
+	basicPrivilege = viper.Get("basicPrivilege").(int64)
 	if viper.Get("oldversion").(string) != buildVersion {
 		isVersionChange = true
 	}
@@ -124,16 +140,13 @@ func prog(state overseer.State) {
 	me, _ := s.UserMe()
 	fmt.Println("ID=" + me.ID)
 	botID = me.ID
-	s.AddHandler(txtMessageHandler)
 	s.AddHandler(markdownMessageHandler)
-	s.AddHandler(uploadChanFileHandler)
-	s.AddHandler(uploadDeleteHandler)
-	s.AddHandler(statuHan)
+	s.AddHandler(registJoinHandler)
+	s.AddHandler(registReactionHandler)
+
 	s.Open()
 	localSession = s
 	commonChanHandlerInit()
-	sheetManagerInit()
-	resinRecordInit()
 
 	if isVersionChange {
 		go func() {
@@ -141,7 +154,7 @@ func prog(state overseer.State) {
 			card := kcard.KHLCard{}
 			card.Init()
 			card.Card.Theme = "success"
-			card.AddModule_header("YUI 热更新完成")
+			card.AddModule_header("Skynet 热更新完成")
 			card.AddModule_divider()
 			card.AddModule_markdown("当前版本号：`" + buildVersion + "`")
 			card.AddModule_markdown("**更新内容：**\n" + buildUpdateLog())
@@ -171,7 +184,6 @@ func prog(state overseer.State) {
 	viper.Set("lastwordsID", lastResp.MsgID)
 	fmt.Println("[Write] lastwordsID=", lastResp.MsgID)
 	viper.WriteConfig()
-	sheetsDbSave()
 	fmt.Println("Bot will shutdown after 1 second.")
 
 	<-time.After(time.Second * time.Duration(1))
@@ -183,16 +195,13 @@ func main() {
 	overseer.Run(overseer.Config{
 		Required: true,
 		Program:  prog,
-		Fetcher:  &fetcher.File{Path: "YUI-KHL"},
+		Fetcher:  &fetcher.File{Path: "Skynet-KOOK"},
 		Debug:    false,
 	})
 }
 
 // FileMessageContext
 // MessageButtonClickContext
-func statuHan(ctx *khl.BotJoinContext) {
-	fmt.Println("Bot Join:" + ctx.Extra.GuildID)
-}
 func markdownMessageHandler(ctx *khl.KmarkdownMessageContext) {
 	if ctx.Extra.Author.Bot {
 		return
@@ -200,30 +209,13 @@ func markdownMessageHandler(ctx *khl.KmarkdownMessageContext) {
 	switch ctx.Common.TargetID {
 	case botID:
 		directMessageHandler(ctx.Common)
+	case registChannel:
+		registChanHandler(ctx.Common)
 	case commonChannel:
 		commonChanHandler(ctx.Common)
-	case uploadChannel:
-		uploadChanHandler(ctx.Common)
-	case sheetChannel:
-		sheetChanHandler(ctx.Common)
-	case searchChannel:
-		searchChanHandler(ctx.Common)
-	}
-}
-func txtMessageHandler(ctx *khl.TextMessageContext) {
-	if ctx.Extra.Author.Bot {
-		return
-	}
-	switch ctx.Common.TargetID {
-	case botID:
-		directMessageHandler(ctx.Common)
-	case commonChannel:
-		commonChanHandler(ctx.Common)
-	case uploadChannel:
-		uploadChanHandler(ctx.Common)
-	case sheetChannel:
-		sheetChanHandler(ctx.Common)
-	case searchChannel:
-		searchChanHandler(ctx.Common)
+	case gameChannel:
+		otherChanHandler(ctx.Common)
+	case ingressChannel:
+		otherChanHandler(ctx.Common)
 	}
 }
