@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"regexp"
-	"strconv"
 	"time"
 
 	"github.com/lonelyevil/khl"
@@ -12,7 +11,7 @@ import (
 
 var registRules []handlerRule = []handlerRule{
 	{`^ping`, func(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
-		f("来自 127.0.0.1 的回复: 字节=32 时间=" + strconv.Itoa(rand.Intn(14)) + "ms TTL=62")
+		f(randomDynamicSentence(pong))
 	}},
 	{`^\s*帮助\s*$`, func(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
 		var str string = "当前频道支持以下命令哦\n---\n"

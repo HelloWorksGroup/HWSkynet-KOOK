@@ -3,6 +3,7 @@ package main
 //import "fmt"
 import (
 	"math/rand"
+	"strconv"
 )
 
 var shutdown = []string{
@@ -18,6 +19,10 @@ var idle = []string{
 	"不开心",
 	"。。。。",
 	"。。",
+}
+
+func pong() string {
+	return "来自 `127.0.0.1` 的回复: 字节=`32` 时间=`" + strconv.Itoa(rand.Intn(14)) + "ms` TTL=`62`"
 }
 
 func randomDynamicSentence(fn func() string) string {
