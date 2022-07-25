@@ -45,7 +45,7 @@ type msdIdCode struct {
 	msgId string
 }
 
-var registArray map[string]msdIdCode
+var registArray map[string]msdIdCode = make(map[string]msdIdCode)
 
 var reactionArray = []string{
 	"0️⃣",
