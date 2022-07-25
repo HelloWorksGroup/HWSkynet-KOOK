@@ -19,7 +19,7 @@ var registRules []handlerRule = []handlerRule{
 		f(str)
 	}},
 	{`^\s*HelloWorld\s*$`, func(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
-		if _, ok := registArray[ctxCommon.AuthorID]; !ok {
+		if _, ok := registArray[ctxCommon.AuthorID]; ok {
 			f("已在处置流程中，请尽快完成操作。")
 			return
 		}
