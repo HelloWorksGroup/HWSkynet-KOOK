@@ -20,14 +20,17 @@ import (
 )
 
 func buildUpdateLog() string {
-	return "修复了一个判断写反了的问题。\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
+	return "修复了几个小问题。\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
 }
 
-var buildVersion string = "Skynet Alpha0002"
+var buildVersion string = "Skynet Alpha0004"
 
 // TODO:
 // 未找到合适方法在消息事件的上下文中获取服务器ID，暂时写这里了
 var guildId string = "6067588674873845"
+
+// stdout
+var stdoutChannel string
 
 // 消毒室
 var registChannel string
@@ -100,6 +103,8 @@ func prog(state overseer.State) {
 	rand.Seed(time.Now().UnixNano())
 
 	viper.SetDefault("token", "0")
+
+	viper.SetDefault("stdoutChannel", "0")
 	viper.SetDefault("registChannel", "0")
 	viper.SetDefault("commonChannel", "0")
 	viper.SetDefault("gameChannel", "0")
@@ -114,9 +119,10 @@ func prog(state overseer.State) {
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("fatal error config file: %s", err))
 	}
 	masterID = viper.Get("masterID").(string)
+	stdoutChannel = viper.Get("stdoutChannel").(string)
 	registChannel = viper.Get("registChannel").(string)
 	commonChannel = viper.Get("commonChannel").(string)
 	gameChannel = viper.Get("gameChannel").(string)
@@ -158,7 +164,7 @@ func prog(state overseer.State) {
 			card.AddModule_divider()
 			card.AddModule_markdown("当前版本号：`" + buildVersion + "`")
 			card.AddModule_markdown("**更新内容：**\n" + buildUpdateLog())
-			sendKCard(commonChannel, card.String())
+			sendKCard(stdoutChannel, card.String())
 		}()
 	}
 
@@ -179,7 +185,7 @@ func prog(state overseer.State) {
 	signal.Notify(sc, os.Interrupt, overseer.SIGUSR2)
 	<-sc
 
-	lastResp, _ := sendMarkdown(commonChannel, randomSentence(shutdown))
+	lastResp, _ := sendMarkdown(stdoutChannel, randomSentence(shutdown))
 
 	viper.Set("lastwordsID", lastResp.MsgID)
 	fmt.Println("[Write] lastwordsID=", lastResp.MsgID)

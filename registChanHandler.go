@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"regexp"
 	"strconv"
@@ -70,7 +71,7 @@ func registReq(guildId string, userId string, send func(string) string, session 
 	code := reactionArray[rand.Intn(7)]
 	id := send("检测到未识别对象 (met)" + userId + "(met) ，请在`100`秒内点击本条消息下方的图标`" +
 		code + "`完成消毒处置，超时或者操作错误将被强制弹出。")
-	registArray[userId] = msdIdCode{code: registArray[userId].code, msgId: id, guildId: guildId}
+	registArray[userId] = msdIdCode{code: code, msgId: id, guildId: guildId}
 	for _, v := range reactionArray {
 		session.MessageAddReaction(id, v)
 	}
@@ -82,6 +83,7 @@ func registReq(guildId string, userId string, send func(string) string, session 
 			return
 		}
 		send("(met)" + userId + "(met) 超时未完成处置，已被强制弹出")
+		fmt.Println("Kick", userId, "from", registArray[userId].guildId)
 		session.GuildKickout(registArray[userId].guildId, userId)
 		session.MessageDelete(registArray[userId].msgId)
 		delete(registArray, userId)
@@ -93,7 +95,7 @@ func registJoinHandler(ctx *khl.GuildMemberAddContext) {
 		resp, _ := sendMarkdown(registChannel, words)
 		return resp.MsgID
 	}
-	registReq(ctx.Common.TargetID, ctx.Extra.UserID, send, ctx.Session)
+	registReq(guildId, ctx.Extra.UserID, send, ctx.Session)
 }
 
 func registReactionHandler(ctx *khl.ReactionAddContext) {
@@ -125,7 +127,8 @@ func registReactionHandler(ctx *khl.ReactionAddContext) {
 				<-time.After(time.Second * time.Duration(10))
 				ctx.Session.GuildKickout(registArray[ctx.Extra.UserID].guildId, ctx.Extra.UserID)
 			}()
-			reply("(met)" + ctx.Extra.UserID + "(met) 被识别为入侵者，将在`10`s后强制弹出")
+			fmt.Println("want", registArray[ctx.Extra.UserID].code, "get", ctx.Extra.Emoji.ID)
+			reply("(met)" + ctx.Extra.UserID + "(met) 被识别为入侵者，将在`10s`后强制弹出")
 		}
 		ctx.Session.MessageDelete(registArray[ctx.Extra.UserID].msgId)
 		delete(registArray, ctx.Extra.UserID)
