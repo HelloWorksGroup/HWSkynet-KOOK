@@ -195,7 +195,7 @@ func main() {
 	overseer.Run(overseer.Config{
 		Required: true,
 		Program:  prog,
-		Fetcher:  &fetcher.File{Path: "Skynet-KOOK"},
+		Fetcher:  &fetcher.File{Path: "HWSkynet-KOOK"},
 		Debug:    false,
 	})
 }
