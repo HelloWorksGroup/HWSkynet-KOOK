@@ -82,8 +82,8 @@ func registReq(guildId string, userId string, send func(string) string, session 
 			return
 		}
 		send("(met)" + userId + "(met) 超时未完成处置，已被强制弹出")
-		fmt.Println("Kick", userId, "from", registArray[userId].guildId)
-		session.GuildKickout(registArray[userId].guildId, userId)
+		fmt.Println("Kick", userId, "from", guildId, "origin", registArray[userId].guildId)
+		session.GuildKickout(guildId, userId)
 		session.MessageDelete(registArray[userId].msgId)
 		delete(registArray, userId)
 	}()
@@ -124,7 +124,8 @@ func registReactionHandler(ctx *khl.ReactionAddContext) {
 			// DONE:
 			go func() {
 				<-time.After(time.Second * time.Duration(10))
-				ctx.Session.GuildKickout(registArray[ctx.Extra.UserID].guildId, ctx.Extra.UserID)
+				fmt.Println("Kick", ctx.Extra.UserID, "from", guildId, "origin", registArray[ctx.Extra.UserID].guildId)
+				ctx.Session.GuildKickout(guildId, ctx.Extra.UserID)
 			}()
 			fmt.Println("want", registArray[ctx.Extra.UserID].code, "get", ctx.Extra.Emoji.ID)
 			reply("(met)" + ctx.Extra.UserID + "(met) 被识别为入侵者，将在`10s`后强制弹出")

@@ -20,10 +20,10 @@ import (
 )
 
 func buildUpdateLog() string {
-	return "修复了几个小问题。\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
+	return "修复踢人接口的服务器ID问题。\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
 }
 
-var buildVersion string = "Skynet Alpha0004"
+var buildVersion string = "Skynet Alpha0005"
 
 // TODO:
 // 未找到合适方法在消息事件的上下文中获取服务器ID，暂时写这里了
