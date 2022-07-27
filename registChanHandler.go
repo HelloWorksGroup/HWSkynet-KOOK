@@ -69,7 +69,7 @@ var reactionArray = []string{
 func registReq(guildId string, userId string, send func(string) string, session *khl.Session) {
 	code := reactionArray[rand.Intn(7)]
 	id := send("检测到未识别对象 (met)" + userId + "(met) ，请在`100`秒内点击本条消息下方的图标`" +
-		code + "`完成消毒处置，超时或者操作错误将被强制弹出。")
+		code + "`完成消毒处置，超时或者操作错误将 ~~被强制弹出~~ 需要重新进行消毒。")
 	registArray[userId] = msdIdCode{code: code, msgId: id, guildId: guildId}
 	for _, v := range reactionArray {
 		session.MessageAddReaction(id, v)
@@ -81,9 +81,9 @@ func registReq(guildId string, userId string, send func(string) string, session 
 		if _, ok := registArray[userId]; !ok {
 			return
 		}
-		send("(met)" + userId + "(met) 超时未完成处置，已被强制弹出")
+		send("(met)" + userId + "(met) 超时未完成处置，可以发送`HelloWorld`重新进行消毒程序。")
 		fmt.Println("Kick", userId, "from", guildId, "origin", registArray[userId].guildId)
-		session.GuildKickout(guildId, userId)
+		// session.GuildKickout(guildId, userId)
 		session.MessageDelete(registArray[userId].msgId)
 		delete(registArray, userId)
 	}()
@@ -122,13 +122,13 @@ func registReactionHandler(ctx *khl.ReactionAddContext) {
 			reply("(met)" + ctx.Extra.UserID + "(met) 已成功执行消毒处置程序，现已对其开放大厅权限")
 		} else {
 			// DONE:
-			go func() {
-				<-time.After(time.Second * time.Duration(10))
-				fmt.Println("Kick", ctx.Extra.UserID, "from", guildId, "origin", registArray[ctx.Extra.UserID].guildId)
-				ctx.Session.GuildKickout(guildId, ctx.Extra.UserID)
-			}()
+			// go func() {
+			// 	<-time.After(time.Second * time.Duration(10))
+			// 	fmt.Println("Kick", ctx.Extra.UserID, "from", guildId, "origin", registArray[ctx.Extra.UserID].guildId)
+			// 	ctx.Session.GuildKickout(guildId, ctx.Extra.UserID)
+			// }()
 			fmt.Println("want", registArray[ctx.Extra.UserID].code, "get", ctx.Extra.Emoji.ID)
-			reply("(met)" + ctx.Extra.UserID + "(met) 被识别为入侵者，将在`10s`后强制弹出")
+			reply("(met)" + ctx.Extra.UserID + "(met) 消毒处置失败，可以发送`HelloWorld`重新进行消毒程序。")
 		}
 		ctx.Session.MessageDelete(registArray[ctx.Extra.UserID].msgId)
 		delete(registArray, ctx.Extra.UserID)
