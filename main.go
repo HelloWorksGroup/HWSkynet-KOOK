@@ -20,14 +20,14 @@ import (
 )
 
 func buildUpdateLog() string {
-	return "测试更新，添加认证提示。添加频道跳转提示。\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
+	return "Hotfix\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
 }
 
-var buildVersion string = "Skynet Alpha0007"
+var buildVersion string = "Skynet Alpha0008"
 
 // TODO:
 // 未找到合适方法在消息事件的上下文中获取服务器ID，暂时写这里了
-var guildId string = "6067588674873845"
+var gGuildId string = "6067588674873845"
 
 // stdout
 var stdoutChannel string

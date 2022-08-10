@@ -23,7 +23,7 @@ var registRules []handlerRule = []handlerRule{
 			f("已在处置流程中，请尽快完成操作。")
 			return
 		}
-		registReq(guildId, ctxCommon.AuthorID, f, localSession)
+		registReq(gGuildId, ctxCommon.AuthorID, f, localSession)
 	}},
 }
 
@@ -94,11 +94,9 @@ func registJoinHandler(ctx *khl.GuildMemberAddContext) {
 		resp, _ := sendMarkdown(registChannel, words)
 		return resp.MsgID
 	}
-	fmt.Println("GuildID", guildId, ctx.Common.TargetID)
-
-	u, _ := ctx.Session.UserView(ctx.Extra.UserID, nil)
+	u, _ := ctx.Session.UserView(ctx.Extra.UserID, khl.UserViewWithGuildID(ctx.Common.TargetID))
 	if u.MobileVerified {
-		registReq(guildId, ctx.Extra.UserID, send, ctx.Session)
+		registReq(ctx.Common.TargetID, ctx.Extra.UserID, send, ctx.Session)
 	} else {
 		sendMarkdown(registChannel, "(met)"+ctx.Extra.UserID+"(met) 由于未通过手机认证，无法启动消毒程序。"+
 			"\n通过手机认证后，可以发送`HelloWorld`手动触发消毒程序。")
