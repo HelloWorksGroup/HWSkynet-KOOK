@@ -94,7 +94,15 @@ func registJoinHandler(ctx *khl.GuildMemberAddContext) {
 		resp, _ := sendMarkdown(registChannel, words)
 		return resp.MsgID
 	}
-	registReq(guildId, ctx.Extra.UserID, send, ctx.Session)
+	fmt.Println("GuildID", guildId, ctx.Common.TargetID)
+
+	u, _ := ctx.Session.UserView(ctx.Extra.UserID, nil)
+	if u.MobileVerified {
+		registReq(guildId, ctx.Extra.UserID, send, ctx.Session)
+	} else {
+		sendMarkdown(registChannel, "(met)"+ctx.Extra.UserID+"(met) 由于未通过手机认证，无法启动消毒程序。"+
+			"\n通过手机认证后，可以发送`HelloWorld`手动触发消毒程序。")
+	}
 }
 
 func registReactionHandler(ctx *khl.ReactionAddContext) {
@@ -118,8 +126,13 @@ func registReactionHandler(ctx *khl.ReactionAddContext) {
 		// 如果正确，则赋予basicPrivilege权限，否则将移除用户
 		if ctx.Extra.Emoji.ID == registArray[ctx.Extra.UserID].code {
 			// DONE:
-			ctx.Session.GuildRoleGrant(registArray[ctx.Extra.UserID].guildId, ctx.Extra.UserID, basicPrivilege)
-			reply("(met)" + ctx.Extra.UserID + "(met) 已成功执行消毒处置程序，现已对其开放大厅权限")
+			_, err := ctx.Session.GuildRoleGrant(registArray[ctx.Extra.UserID].guildId, ctx.Extra.UserID, basicPrivilege)
+			if err != nil {
+				reply("(met)" + ctx.Extra.UserID + "(met) 授予权限失败，可能原因是用户未通过实名认证")
+			} else {
+				reply("(met)" + ctx.Extra.UserID + "(met) 已成功执行消毒处置程序，已为你开放大厅权限。" +
+					"\n现在可以进入 (chn)4641712772375343(chn) 小憩。")
+			}
 		} else {
 			// DONE:
 			// go func() {

@@ -20,10 +20,10 @@ import (
 )
 
 func buildUpdateLog() string {
-	return "现在消毒处置失败后，将不再踢出用户。\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
+	return "测试更新，添加认证提示。添加频道跳转提示。\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
 }
 
-var buildVersion string = "Skynet Alpha0006"
+var buildVersion string = "Skynet Alpha0007"
 
 // TODO:
 // 未找到合适方法在消息事件的上下文中获取服务器ID，暂时写这里了
