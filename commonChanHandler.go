@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lonelyevil/khl"
+	"github.com/lonelyevil/kook"
 )
 
 var commOnce sync.Once
@@ -13,10 +13,10 @@ var clockInput = make(chan interface{})
 var tWords TodayWords
 
 var commRules []handlerRule = []handlerRule{
-	{`^ping`, func(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
+	{`^ping`, func(ctxCommon *kook.EventDataGeneral, s []string, f func(string) string) {
 		f(randomDynamicSentence(pong))
 	}},
-	{`^\s*帮助\s*$`, func(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
+	{`^\s*帮助\s*$`, func(ctxCommon *kook.EventDataGeneral, s []string, f func(string) string) {
 		var str string = "当前频道支持以下命令哦\n---\n"
 		str += "还没有有效命令"
 		f(str)
@@ -50,8 +50,8 @@ func clock(input chan interface{}) {
 	}
 }
 
-func commonChanHandler(ctxCommon *khl.EventDataGeneral) {
-	if ctxCommon.Type != khl.MessageTypeKMarkdown {
+func commonChanHandler(ctxCommon *kook.EventDataGeneral) {
+	if ctxCommon.Type != kook.MessageTypeKMarkdown {
 		return
 	}
 	reply := func(words string) string {

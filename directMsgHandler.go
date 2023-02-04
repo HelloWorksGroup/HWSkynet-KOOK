@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/lonelyevil/khl"
+	"github.com/lonelyevil/kook"
 )
 
-func portMarkdown(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
+func portMarkdown(ctxCommon *kook.EventDataGeneral, s []string, f func(string) string) {
 	sendMarkdown(s[1], s[2])
 	return
 }
@@ -16,7 +16,7 @@ var directRules []handlerRule = []handlerRule{
 	{`^\s*send\s*(\d+),(.*)$`, portMarkdown},
 }
 
-func directMessageHandler(ctxCommon *khl.EventDataGeneral) {
+func directMessageHandler(ctxCommon *kook.EventDataGeneral) {
 	if ctxCommon.AuthorID != masterID {
 		sendMarkdownDirect(ctxCommon.AuthorID, "未授权的通信...访问拒绝 [-2]")
 		return

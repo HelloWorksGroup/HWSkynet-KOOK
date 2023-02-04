@@ -3,11 +3,11 @@ package main
 import (
 	"regexp"
 
-	"github.com/lonelyevil/khl"
+	"github.com/lonelyevil/kook"
 )
 
-func otherChanHandler(ctxCommon *khl.EventDataGeneral) {
-	if ctxCommon.Type != khl.MessageTypeKMarkdown {
+func otherChanHandler(ctxCommon *kook.EventDataGeneral) {
+	if ctxCommon.Type != kook.MessageTypeKMarkdown {
 		return
 	}
 	reply := func(words string) string {

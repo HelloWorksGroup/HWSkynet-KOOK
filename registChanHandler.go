@@ -6,19 +6,19 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/lonelyevil/khl"
+	"github.com/lonelyevil/kook"
 )
 
 var registRules []handlerRule = []handlerRule{
-	{`^ping`, func(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
+	{`^ping`, func(ctxCommon *kook.EventDataGeneral, s []string, f func(string) string) {
 		f(randomDynamicSentence(pong))
 	}},
-	{`^\s*帮助\s*$`, func(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
+	{`^\s*帮助\s*$`, func(ctxCommon *kook.EventDataGeneral, s []string, f func(string) string) {
 		var str string = "当前频道支持以下命令哦\n---\n"
 		str += "还没有有效命令"
 		f(str)
 	}},
-	{`^\s*HelloWorld\s*$`, func(ctxCommon *khl.EventDataGeneral, s []string, f func(string) string) {
+	{`^\s*HelloWorld\s*$`, func(ctxCommon *kook.EventDataGeneral, s []string, f func(string) string) {
 		if _, ok := registArray[ctxCommon.AuthorID]; ok {
 			f("已在处置流程中，请尽快完成操作。")
 			return
@@ -27,8 +27,8 @@ var registRules []handlerRule = []handlerRule{
 	}},
 }
 
-func registChanHandler(ctxCommon *khl.EventDataGeneral) {
-	if ctxCommon.Type != khl.MessageTypeKMarkdown {
+func registChanHandler(ctxCommon *kook.EventDataGeneral) {
+	if ctxCommon.Type != kook.MessageTypeKMarkdown {
 		return
 	}
 	reply := func(words string) string {
@@ -66,7 +66,7 @@ var reactionArray = []string{
 	"7️⃣",
 }
 
-func registReq(guildId string, userId string, send func(string) string, session *khl.Session) {
+func registReq(guildId string, userId string, send func(string) string, session *kook.Session) {
 	code := reactionArray[rand.Intn(7)]
 	id := send("检测到未识别对象 (met)" + userId + "(met) ，请在`100`秒内点击本条消息下方的图标`" +
 		code + "`完成消毒处置，超时或者操作错误将 ~~被强制弹出~~ 需要重新进行消毒。")
@@ -89,12 +89,12 @@ func registReq(guildId string, userId string, send func(string) string, session 
 	}()
 }
 
-func registJoinHandler(ctx *khl.GuildMemberAddContext) {
+func registJoinHandler(ctx *kook.GuildMemberAddContext) {
 	send := func(words string) string {
 		resp, _ := sendMarkdown(registChannel, words)
 		return resp.MsgID
 	}
-	u, _ := ctx.Session.UserView(ctx.Extra.UserID, khl.UserViewWithGuildID(ctx.Common.TargetID))
+	u, _ := ctx.Session.UserView(ctx.Extra.UserID, kook.UserViewWithGuildID(ctx.Common.TargetID))
 	if u.MobileVerified {
 		registReq(ctx.Common.TargetID, ctx.Extra.UserID, send, ctx.Session)
 	} else {
@@ -103,7 +103,7 @@ func registJoinHandler(ctx *khl.GuildMemberAddContext) {
 	}
 }
 
-func registReactionHandler(ctx *khl.ReactionAddContext) {
+func registReactionHandler(ctx *kook.ReactionAddContext) {
 	if ctx.Extra.UserID == botID {
 		return
 	}

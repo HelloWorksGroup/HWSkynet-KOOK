@@ -13,17 +13,17 @@ import (
 
 	"github.com/jpillora/overseer"
 	"github.com/jpillora/overseer/fetcher"
-	"github.com/lonelyevil/khl"
-	"github.com/lonelyevil/khl/log_adapter/plog"
+	"github.com/lonelyevil/kook"
+	"github.com/lonelyevil/kook/log_adapter/plog"
 	"github.com/phuslu/log"
 	"github.com/spf13/viper"
 )
 
 func buildUpdateLog() string {
-	return "Hotfix\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
+	return "更新kook api库至v0.0.31\n\nHelloWorks-Skynet@[GitHub](https://github.com/Nigh/HWSkynet-KOOK)"
 }
 
-var buildVersion string = "Skynet Alpha0008"
+var buildVersion string = "Skynet Alpha0009"
 
 // TODO:
 // 未找到合适方法在消息事件的上下文中获取服务器ID，暂时写这里了
@@ -49,7 +49,7 @@ var basicPrivilege int64
 
 type handlerRule struct {
 	matcher string
-	getter  func(ctxCommon *khl.EventDataGeneral, matchs []string, reply func(string) string)
+	getter  func(ctxCommon *kook.EventDataGeneral, matchs []string, reply func(string) string)
 }
 
 var isVersionChange bool = false
@@ -57,7 +57,7 @@ var lastWakeupDay string // 上一次唤醒日期，用于限定每日一次的�
 var masterID string
 var botID string
 
-var localSession *khl.Session
+var localSession *kook.Session
 
 func isTodayWakeuped() bool {
 	return lastWakeupDay == strconv.Itoa(time.Now().Local().Day())
@@ -69,29 +69,29 @@ func setWakeup() {
 	viper.WriteConfig()
 }
 
-func sendKCard(target string, content string) (resp *khl.MessageResp, err error) {
-	return localSession.MessageCreate((&khl.MessageCreate{
-		MessageCreateBase: khl.MessageCreateBase{
-			Type:     khl.MessageTypeCard,
+func sendKCard(target string, content string) (resp *kook.MessageResp, err error) {
+	return localSession.MessageCreate((&kook.MessageCreate{
+		MessageCreateBase: kook.MessageCreateBase{
+			Type:     kook.MessageTypeCard,
 			TargetID: target,
 			Content:  content,
 		},
 	}))
 }
-func sendMarkdown(target string, content string) (resp *khl.MessageResp, err error) {
-	return localSession.MessageCreate((&khl.MessageCreate{
-		MessageCreateBase: khl.MessageCreateBase{
-			Type:     khl.MessageTypeKMarkdown,
+func sendMarkdown(target string, content string) (resp *kook.MessageResp, err error) {
+	return localSession.MessageCreate((&kook.MessageCreate{
+		MessageCreateBase: kook.MessageCreateBase{
+			Type:     kook.MessageTypeKMarkdown,
 			TargetID: target,
 			Content:  content,
 		},
 	}))
 }
 
-func sendMarkdownDirect(target string, content string) (mr *khl.MessageResp, err error) {
-	return localSession.DirectMessageCreate(&khl.DirectMessageCreate{
-		MessageCreateBase: khl.MessageCreateBase{
-			Type:     khl.MessageTypeKMarkdown,
+func sendMarkdownDirect(target string, content string) (mr *kook.MessageResp, err error) {
+	return localSession.DirectMessageCreate(&kook.DirectMessageCreate{
+		MessageCreateBase: kook.MessageCreateBase{
+			Type:     kook.MessageTypeKMarkdown,
 			TargetID: target,
 			Content:  content,
 		},
@@ -142,7 +142,7 @@ func prog(state overseer.State) {
 	token := viper.Get("token").(string)
 	fmt.Println("token=" + token)
 
-	s := khl.New(token, plog.NewLogger(&l))
+	s := kook.New(token, plog.NewLogger(&l))
 	me, _ := s.UserMe()
 	fmt.Println("ID=" + me.ID)
 	botID = me.ID
@@ -208,7 +208,7 @@ func main() {
 
 // FileMessageContext
 // MessageButtonClickContext
-func markdownMessageHandler(ctx *khl.KmarkdownMessageContext) {
+func markdownMessageHandler(ctx *kook.KmarkdownMessageContext) {
 	if ctx.Extra.Author.Bot {
 		return
 	}

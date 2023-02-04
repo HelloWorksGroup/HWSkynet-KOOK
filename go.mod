@@ -3,12 +3,10 @@ module github.com/HelloWorksGroup/HWSkynet-KOOK
 go 1.18
 
 require (
-	github.com/adrg/strutil v0.3.0
 	github.com/jpillora/overseer v1.1.6
-	github.com/lonelyevil/khl v0.0.27-0.20220429093902-17fb9d330fc2
-	github.com/lonelyevil/khl/log_adapter/plog v0.0.27-0.20220429093902-17fb9d330fc2
-	github.com/nanobox-io/golang-scribble v0.0.0-20190309225732-aa3e7c118975
-	github.com/phuslu/log v1.0.77
+	github.com/lonelyevil/kook v0.0.31
+	github.com/lonelyevil/kook/log_adapter/plog v0.0.31
+	github.com/phuslu/log v1.0.80
 	github.com/spf13/viper v1.12.0
 	local/khlcard v0.0.0-00010101000000-000000000000
 )
@@ -21,7 +19,6 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/jcelliott/lumber v0.0.0-20160324203708-dd349441af25 // indirect
 	github.com/jpillora/s3 v1.1.4 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
